@@ -23,6 +23,8 @@
 /* USER CODE BEGIN Includes */
 
 #include <stdio.h>
+#include "FreeRTOS.h"
+#include "task.h"
 
 /* USER CODE END Includes */
 
@@ -51,6 +53,9 @@
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
+
+static void task1_handler(void* parameters);
+static void task2_handler(void* parameters);
 
 /* USER CODE END PFP */
 
@@ -81,6 +86,11 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 
+	TaskHandle_t task1_handle;
+	TaskHandle_t task2_handle;
+
+	BaseType_t status;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -102,6 +112,18 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+
+  status = xTaskCreate(task1_handler, "task_1", 200, "Hello World", 2, &task1_handle);
+  configASSERT(status == pdPASS);
+
+  status = xTaskCreate(task2_handler, "task_2", 200, "Hello World", 2, &task2_handle);
+  configASSERT(status == pdPASS);
+
+  //start the freeRTOS scheduler
+  vTaskStartScheduler();
+
+  //if the control comes here, then the launch of the scheduler has failed due to
+  //insufficient memory in heap
 
   /* USER CODE END 2 */
 
@@ -307,6 +329,20 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+static void task1_handler(void* parameters)
+{
+	while(1){
+		printf("%s\n", (char*)parameters);
+	}
+}
+
+static void task2_handler(void* parameters)
+{
+	while(1){
+		printf("%s\n", (char*)parameters);
+	}
+}
 
 /* USER CODE END 4 */
 
