@@ -64,18 +64,19 @@ static void task2_handler(void* parameters);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-int _write(int file, char *ptr, int len)
-{
-  (void)file;
-  int DataIdx;
-
-  for (DataIdx = 0; DataIdx < len; DataIdx++)
-  {
-    //__io_putchar(*ptr++);
-    ITM_SendChar((*ptr++));
-  }
-  return len;
-}
+/* Enable this function to enable swv*/
+//int _write(int file, char *ptr, int len)
+//{
+//  (void)file;
+//  int DataIdx;
+//
+//  for (DataIdx = 0; DataIdx < len; DataIdx++)
+//  {
+//    //__io_putchar(*ptr++);
+//    ITM_SendChar((*ptr++));
+//  }
+//  return len;
+//}
 
 /* USER CODE END 0 */
 
