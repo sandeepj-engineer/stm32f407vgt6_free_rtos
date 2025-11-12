@@ -47,6 +47,8 @@
 
 /* USER CODE BEGIN PV */
 
+#define DWT_CTRL    (*(volatile uint32_t*)0xE0001000)
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -112,6 +114,11 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+
+  DWT_CTRL |= (1 << 0);
+
+  SEGGER_SYSVIEW_Conf();
+  SEGGER_SYSVIEW_Start();
 
   status = xTaskCreate(task1_handler, "task_1", 200, "Hello World", 2, &task1_handle);
   configASSERT(status == pdPASS);
