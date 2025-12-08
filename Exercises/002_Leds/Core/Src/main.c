@@ -56,6 +56,10 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
 
+static void led_green_handler(void* parameters);
+static void led_red_handler(void* parameters);
+static void led_orange_handler(void* parameters);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -86,6 +90,11 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 
+	TaskHandle_t task1_handle;
+	TaskHandle_t task2_handle;
+
+	BaseType_t status;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -112,6 +121,21 @@ int main(void)
 
   SEGGER_SYSVIEW_Conf();
   SEGGER_SYSVIEW_Start();
+
+  status = xTaskCreate(led_green_handler, "led_green_task", 200, "NULL", 2, &task1_handle);
+  configASSERT(status == pdPASS);
+
+  status = xTaskCreate(led_red_handler, "led_red_task", 200, "NULL", 2, &task2_handle);
+  configASSERT(status == pdPASS);
+  
+  status = xTaskCreate(led_orange_handler, "led_orange_task", 200, "NULL", 2, &task2_handle);
+  configASSERT(status == pdPASS);
+
+  //start the freeRTOS scheduler
+  vTaskStartScheduler();
+
+  //if the control comes here, then the launch of the scheduler has failed due to
+  //insufficient memory in heap
 
   /* USER CODE END 2 */
 
@@ -149,8 +173,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 50;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
+  RCC_OscInitStruct.PLL.PLLN = 168;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -166,7 +190,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
     Error_Handler();
   }
@@ -317,6 +341,33 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+static void led_green_handler(void* parameters)
+{
+	while(1){
+		SEGGER_SYSVIEW_PrintfTarget("Toggling Green LED");
+		HAL_GPIO_TogglePin(GPIOD, LED_GREEN_PIN);
+		HAL_Delay(1000);
+	}
+}
+
+static void led_red_handler(void* parameters)
+{
+	while(1){
+		SEGGER_SYSVIEW_PrintfTarget("Toggling Red LED");
+		HAL_GPIO_TogglePin(GPIOD, LED_RED_PIN);
+		HAL_Delay(800);
+	}
+}
+
+static void led_orange_handler(void* parameters)
+{
+	while(1){
+		SEGGER_SYSVIEW_PrintfTarget("Toggling Orange LED");
+		HAL_GPIO_TogglePin(GPIOD, LED_ORANGE_PIN);
+		HAL_Delay(400);
+	}
+}
 
 /* USER CODE END 4 */
 
