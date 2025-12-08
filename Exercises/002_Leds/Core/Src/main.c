@@ -23,6 +23,8 @@
 /* USER CODE BEGIN Includes */
 
 #include <stdio.h>
+#include "FreeRTOS.h"
+#include "task.h"
 
 /* USER CODE END Includes */
 
@@ -45,6 +47,8 @@
 
 /* USER CODE BEGIN PV */
 
+#define DWT_CTRL    (*(volatile uint32_t*)0xE0001000)
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,18 +61,19 @@ static void MX_GPIO_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-int _write(int file, char *ptr, int len)
-{
-  (void)file;
-  int DataIdx;
-
-  for (DataIdx = 0; DataIdx < len; DataIdx++)
-  {
-    //__io_putchar(*ptr++);
-    ITM_SendChar((*ptr++));
-  }
-  return len;
-}
+/* Enable this function to enable swv*/
+//int _write(int file, char *ptr, int len)
+//{
+//  (void)file;
+//  int DataIdx;
+//
+//  for (DataIdx = 0; DataIdx < len; DataIdx++)
+//  {
+//    //__io_putchar(*ptr++);
+//    ITM_SendChar((*ptr++));
+//  }
+//  return len;
+//}
 
 /* USER CODE END 0 */
 
@@ -102,6 +107,11 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+
+  DWT_CTRL |= (1 << 0);
+
+  SEGGER_SYSVIEW_Conf();
+  SEGGER_SYSVIEW_Start();
 
   /* USER CODE END 2 */
 
